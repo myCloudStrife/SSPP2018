@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
                 in.read((char *) &x, sizeof(x));
                 out << setw(10) << setprecision(4) << x << (j == n - 1 ? '\n' : ' ');
             } else {
-                double x;
+                float x;
                 in.read((char *) &x, sizeof(x));
                 out << setw(10) << setprecision(4) << x << (j == n - 1 ? '\n' : ' ');
             }
