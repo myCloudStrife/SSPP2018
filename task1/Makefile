@@ -5,8 +5,8 @@ TEST_MATRIX_A = tests/A.dat
 TEST_MATRIX_B = tests/B.dat
 TEST_MATRIX_C = tests/C.dat
 
-REPORT_MATRIX_A = tests/A.dat
-REPORT_MATRIX_B = tests/B.dat
+REPORT_MATRIX_A = tmpA.dat
+REPORT_MATRIX_B = tmpB.dat
 REPORT_SCRIPT = report.gnu
 REPORT_PLOT_DATA = plots/plot.dat
 
@@ -37,9 +37,9 @@ test: $(TEST_MATRIX_A) $(TEST_MATRIX_B) $(TEST_MATRIX_C)
 	./compare $(TEST_MATRIX_C) C3.dat
 	./compare $(TEST_MATRIX_C) C4.dat
 	./compare $(TEST_MATRIX_C) C5.dat
-	rm C?.dat
+	rm C?.dat 
 
-report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B)
+report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) main
 	echo "# mode time" > $(REPORT_PLOT_DATA)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 0 >> $(REPORT_PLOT_DATA)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 1 >> $(REPORT_PLOT_DATA)
@@ -48,7 +48,13 @@ report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 4 >> $(REPORT_PLOT_DATA)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 5 >> $(REPORT_PLOT_DATA)
 	gnuplot -p $(REPORT_SCRIPT)
-	rm tmp.dat
+	rm tmp.dat $(REPORT_MATRIX_A) $(REPORT_MATRIX_B)
 	
+$(REPORT_MATRIX_A): gen
+	./gen d 500 500 $(REPORT_MATRIX_A)
+
+$(REPORT_MATRIX_B): gen
+	./gen d 500 500 $(REPORT_MATRIX_B)
+
 clean:
 	rm -fr $(OBJS)
