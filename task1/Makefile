@@ -5,6 +5,7 @@ TEST_MATRIX_A = tests/A.dat
 TEST_MATRIX_B = tests/B.dat
 TEST_MATRIX_C = tests/C.dat
 
+SIZE = 100
 REPORT_MATRIX_A = tmpA.dat
 REPORT_MATRIX_B = tmpB.dat
 REPORT_SCRIPT = report.gnu
@@ -51,10 +52,10 @@ report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) main
 	rm tmp.dat $(REPORT_MATRIX_A) $(REPORT_MATRIX_B)
 	
 $(REPORT_MATRIX_A): gen
-	./gen d 500 500 $(REPORT_MATRIX_A)
+	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_A)
 
 $(REPORT_MATRIX_B): gen
-	./gen d 500 500 $(REPORT_MATRIX_B)
+	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_B)
 
 clean:
 	rm -fr $(OBJS)
