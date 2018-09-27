@@ -5,11 +5,14 @@ TEST_MATRIX_A = tests/A.dat
 TEST_MATRIX_B = tests/B.dat
 TEST_MATRIX_C = tests/C.dat
 
-SIZE = 100
+SIZE = 500
 REPORT_MATRIX_A = tmpA.dat
 REPORT_MATRIX_B = tmpB.dat
 REPORT_SCRIPT = report.gnu
-REPORT_PLOT_DATA = plots/plot.dat
+REPORT_PLOT_DATA = plot.data
+REPORT_OUTPUT = plot.svg
+
+.PHONY: all test report clean
 
 all: $(OBJS)
 
@@ -48,14 +51,11 @@ report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) main
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 3 >> $(REPORT_PLOT_DATA)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 4 >> $(REPORT_PLOT_DATA)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 5 >> $(REPORT_PLOT_DATA)
-	gnuplot -p $(REPORT_SCRIPT)
+	gnuplot $(REPORT_SCRIPT) -e "set output '$(REPORT_OUTPUT)'; plot '$(REPORT_PLOT_DATA)' with linespoints"
 	rm tmp.dat $(REPORT_MATRIX_A) $(REPORT_MATRIX_B)
 	
-$(REPORT_MATRIX_A): gen
-	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_A)
-
-$(REPORT_MATRIX_B): gen
-	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_B)
+%.dat: gen
+	./gen d ${SIZE} ${SIZE} $@
 
 clean:
-	rm -fr $(OBJS)
+	rm -rf $(OBJS) plot.data plot.svg
