@@ -52,6 +52,7 @@ void writeMatrix(T **matrix, char type, uint64_t m, uint64_t n, const char *file
 template <typename T>
 T ** mulMatrix(T **A, Info & A_info, T **B, Info & B_info, int mode) {
     T *data = new T[A_info.m * B_info.n];
+    memset(data, 0, A_info.m * B_info.n * sizeof(T));
     T **C = new T *[A_info.m];
     for (uint64_t i = 0; i < A_info.m; ++i) {
         C[i] = data + i * B_info.n;
@@ -146,7 +147,7 @@ int main(int argc, char **argv) {
     sscanf(argv[4], "%d", &mode);
     ifstream in(argv[1], ios::binary);
     Info A_info, B_info;
-    void *A, *B, *C;
+    void *A, *B, *C = nullptr;
     in.read(&A_info.type, sizeof(A_info.type));
     if (A_info.type == 'd') {
         A = scanMatrix<double>(in, A_info);
@@ -168,6 +169,9 @@ int main(int argc, char **argv) {
     }
     if (A_info.type == 'd') {
         for (int i = 0; i < repeat; ++i) {
+            if (C) {
+                deleteMatrix((double **) C);
+            }
             C = mulMatrix((double **) A, A_info, (double **) B, B_info, mode);
         }
         cout << mode << ' ' << work_time / repeat << endl;
@@ -177,6 +181,9 @@ int main(int argc, char **argv) {
         deleteMatrix((double **) C);
     } else {
         for (int i = 0; i < repeat; ++i) {
+            if (C) {
+                deleteMatrix((float **) C);
+            }
             C = mulMatrix((float **) A, A_info, (float **) B, B_info, mode);
         }
         cout << mode << ' ' << work_time / repeat << endl;

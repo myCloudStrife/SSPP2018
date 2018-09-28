@@ -43,7 +43,9 @@ test: $(TEST_MATRIX_A) $(TEST_MATRIX_B) $(TEST_MATRIX_C)
 	./compare $(TEST_MATRIX_C) C5.dat
 	rm C?.dat 
 
-report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) main
+report: main
+	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_A)
+	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_B)
 	echo "# mode time" > $(REPORT_PLOT_DATA)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 0 10 >> $(REPORT_PLOT_DATA)
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 1 10 >> $(REPORT_PLOT_DATA)
@@ -53,9 +55,6 @@ report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) main
 	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 5 10 >> $(REPORT_PLOT_DATA)
 	gnuplot $(REPORT_SCRIPT) -e "set output '$(REPORT_OUTPUT)'; plot '$(REPORT_PLOT_DATA)' with linespoints"
 	rm tmp.dat $(REPORT_MATRIX_A) $(REPORT_MATRIX_B)
-	
-%.dat: gen
-	./gen d ${SIZE} ${SIZE} $@
 
 clean:
 	rm -rf $(OBJS) $(REPORT_PLOT_DATA) $(REPORT_OUTPUT)
