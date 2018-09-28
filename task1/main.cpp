@@ -5,13 +5,16 @@
 
 using namespace std;
 
+int repeat = 1;
+double work_time = 0;
+
 struct Info {
     uint64_t n, m;
     char type;
 };
 
 void usage(int argc, char **argv) {
-    printf("Usage: %s <matrix1> <matrix2> <output_filename> <mode>\n", argv[0]);
+    printf("Usage: %s <matrix1> <matrix2> <output_filename> <mode> [repeat_count]>\n", argv[0]);
     exit(1);
 }
 
@@ -122,7 +125,7 @@ T ** mulMatrix(T **A, Info & A_info, T **B, Info & B_info, int mode) {
         time2 = chrono::steady_clock::now();
         break;
     }
-    cout << mode << ' ' << chrono::duration_cast<chrono::duration<double>>(time2 - time1).count()<< endl;
+    work_time += chrono::duration_cast<chrono::duration<double>>(time2 - time1).count();
     return C;
 }
 
@@ -133,10 +136,13 @@ void deleteMatrix(T **matrix) {
 }
 
 int main(int argc, char **argv) {
-    if (argc != 5) {
+    if (argc != 5 && argc != 6) {
         usage(argc, argv);
     }
     int mode;
+    if (argc == 6) {
+        sscanf(argv[5], "%d", &repeat);
+    }
     sscanf(argv[4], "%d", &mode);
     ifstream in(argv[1], ios::binary);
     Info A_info, B_info;
@@ -161,17 +167,23 @@ int main(int argc, char **argv) {
         exit(1);
     }
     if (A_info.type == 'd') {
-        C = mulMatrix((double **) A, A_info, (double **) B, B_info, mode);
+        for (int i = 0; i < repeat; ++i) {
+            C = mulMatrix((double **) A, A_info, (double **) B, B_info, mode);
+        }
+        cout << mode << ' ' << work_time / repeat << endl;
         writeMatrix((double **) C, A_info.type, A_info.m, B_info.n, argv[3]);
         deleteMatrix((double **) A);
         deleteMatrix((double **) B);
         deleteMatrix((double **) C);
     } else {
-        C = mulMatrix((float **) A, A_info, (float **) B, B_info, mode);
+        for (int i = 0; i < repeat; ++i) {
+            C = mulMatrix((float **) A, A_info, (float **) B, B_info, mode);
+        }
+        cout << mode << ' ' << work_time / repeat << endl;
         writeMatrix((float **) C, A_info.type, A_info.m, B_info.n, argv[3]);
         deleteMatrix((float **) A);
         deleteMatrix((float **) B);
         deleteMatrix((float **) C);
     }
-	return 0;
+    return 0;
 }

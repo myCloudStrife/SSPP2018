@@ -45,12 +45,12 @@ test: $(TEST_MATRIX_A) $(TEST_MATRIX_B) $(TEST_MATRIX_C)
 
 report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) main
 	echo "# mode time" > $(REPORT_PLOT_DATA)
-	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 0 >> $(REPORT_PLOT_DATA)
-	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 1 >> $(REPORT_PLOT_DATA)
-	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 2 >> $(REPORT_PLOT_DATA)
-	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 3 >> $(REPORT_PLOT_DATA)
-	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 4 >> $(REPORT_PLOT_DATA)
-	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 5 >> $(REPORT_PLOT_DATA)
+	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 0 10 >> $(REPORT_PLOT_DATA)
+	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 1 10 >> $(REPORT_PLOT_DATA)
+	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 2 10 >> $(REPORT_PLOT_DATA)
+	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 3 10 >> $(REPORT_PLOT_DATA)
+	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 4 10 >> $(REPORT_PLOT_DATA)
+	./main $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) tmp.dat 5 10 >> $(REPORT_PLOT_DATA)
 	gnuplot $(REPORT_SCRIPT) -e "set output '$(REPORT_OUTPUT)'; plot '$(REPORT_PLOT_DATA)' with linespoints"
 	rm tmp.dat $(REPORT_MATRIX_A) $(REPORT_MATRIX_B)
 	
@@ -58,4 +58,4 @@ report: $(REPORT_MATRIX_A) $(REPORT_MATRIX_B) main
 	./gen d ${SIZE} ${SIZE} $@
 
 clean:
-	rm -rf $(OBJS) plot.data plot.svg
+	rm -rf $(OBJS) $(REPORT_PLOT_DATA) $(REPORT_OUTPUT)
