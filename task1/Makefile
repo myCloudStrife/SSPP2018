@@ -28,7 +28,7 @@ print: print.cpp
 compare: compare.cpp
 	g++ $(CXXFLAGS) -o $@ $<
 
-test: $(TEST_MATRIX_A) $(TEST_MATRIX_B) $(TEST_MATRIX_C)
+test: $(TEST_MATRIX_A) $(TEST_MATRIX_B) $(TEST_MATRIX_C) main compare
 	./main $(TEST_MATRIX_A) $(TEST_MATRIX_B) C0.dat 0
 	./main $(TEST_MATRIX_A) $(TEST_MATRIX_B) C1.dat 1
 	./main $(TEST_MATRIX_A) $(TEST_MATRIX_B) C2.dat 2
@@ -43,7 +43,7 @@ test: $(TEST_MATRIX_A) $(TEST_MATRIX_B) $(TEST_MATRIX_C)
 	./compare $(TEST_MATRIX_C) C5.dat
 	rm C?.dat 
 
-report: main
+report: main gen
 	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_A)
 	./gen d ${SIZE} ${SIZE} $(REPORT_MATRIX_B)
 	echo "# mode time" > $(REPORT_PLOT_DATA)

@@ -50,4 +50,5 @@ int main(int argc, char **argv) {
     printf("Matrix %s and %s are equal\n", argv[1], argv[2]);
     in1.close();
     in2.close();
+    return 0;
 }

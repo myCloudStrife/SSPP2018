@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
     }
     ofstream out(argv[4], ios::binary);
     uint64_t m, n;
-    sscanf(argv[2], "%llu", &m);
-    sscanf(argv[3], "%llu", &n);
+    sscanf(argv[2], "%llu", (long long unsigned *) &m);
+    sscanf(argv[3], "%llu", (long long unsigned *) &n);
     srand(n * m * time(nullptr));
     out.write(argv[1], 1);
     out.write((char *)&m, sizeof(m));
@@ -36,4 +36,5 @@ int main(int argc, char **argv) {
         }
     }
     out.close();
+    return 0;
 }
