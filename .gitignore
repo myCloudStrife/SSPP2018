@@ -4,3 +4,6 @@ task1/plots
 *.settings
 *.odt
 *.svg
+*.png
+*.dat
+

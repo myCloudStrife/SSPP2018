@@ -5,7 +5,7 @@
 #include <chrono>
 #include <papi.h>
 
-constexpr int EFFECTIVE_CACHE_SIZE = 72;
+constexpr int EFFECTIVE_CACHE_SIZE = 52;
 const char *events_name[] = { "Time", "L1_cache_misses", "L2_cache_misses", "Total_cycles",
         "Flop", "TLB_misses" };
 
@@ -17,9 +17,9 @@ struct Papi_data {
     long long time = 0;
     long_long l1_misses = 0;
     long_long l2_misses = 0;
+    long_long tlb_misses = 0;
     long_long total_cycles = 0;
     long_long flop = 0;
-    long_long tlb_misses = 0;
     void operator+=(const Papi_data & x) {
         time += x.time;
         l1_misses += x.l1_misses;
@@ -92,13 +92,13 @@ Matrix mulMatrix(Matrix & A, Matrix & B, int mode, Papi_data & value) {
     long long time1, time2;
     for (int i = 0; i < 2; ++i) {
         if (!i) {
-            int events[] = { PAPI_L1_TCM, PAPI_L2_TCM, PAPI_TOT_CYC };
+            int events[] = { PAPI_L1_DCM, PAPI_L2_TCM, PAPI_TLB_DM};
             if (PAPI_start_counters(events, 3) != PAPI_OK) {
                 fprintf(stderr, "PAPI_start_counters failed\n");
                 exit(1);
             }
         } else {
-            int events[] = { PAPI_FP_OPS, PAPI_TLB_DM };
+            int events[] = { PAPI_TOT_CYC, PAPI_FP_OPS };
             if (PAPI_start_counters(events, 2) != PAPI_OK) {
                 fprintf(stderr, "PAPI_start_counters failed\n");
                 exit(1);
@@ -162,18 +162,11 @@ Matrix mulMatrix(Matrix & A, Matrix & B, int mode, Papi_data & value) {
                 fprintf(stderr, "PAPI_stop_counters failed\n");
                 exit(1);
             }
-            if (time2 < time1) {
-                fprintf(stderr, "time error\n");
-                exit(1);
-            }
             tmpvalue.time = time2 - time1;
+            C = Matrix(A.rows, B.columns);
         } else {
-            if (PAPI_stop_counters(&tmpvalue.flop, 2) != PAPI_OK) {
+            if (PAPI_stop_counters(&tmpvalue.total_cycles, 2) != PAPI_OK) {
                 fprintf(stderr, "PAPI_stop_counters failed\n");
-                exit(1);
-            }
-            if (time2 < time1) {
-                fprintf(stderr, "time error\n");
                 exit(1);
             }
             tmpvalue.time = (time2 - time1 + tmpvalue.time) / 2;
