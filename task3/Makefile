@@ -1,4 +1,4 @@
-CXXFLAGS = -O2 -std=c++11
+CXXFLAGS = -O2 -std=c++98
 
 .PHONY: all clean
 

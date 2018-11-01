@@ -3,12 +3,19 @@
 #include <vector>
 #include <cmath>
 #include <cstring>
+#include <algorithm>
 
 using namespace std;
 
 void usage(int argc, char **argv) {
     printf("Usage: %s <first_number> <last_number> <output_file>\n", argv[0]);
     exit(1);
+}
+
+string to_string(int x) {
+    static char str[12];
+    sprintf(str, "%d", x);
+    return str;
 }
 
 int find_primes(int left, int right, vector<int> & known_primes, MPI_File & output, double & time) {
@@ -22,7 +29,6 @@ int find_primes(int left, int right, vector<int> & known_primes, MPI_File & outp
             numbers[(j - left) >> 3] |= (1 << ((j - left) & 7));
         }
     }
-    time = MPI_Wtime();
     int count = 0;
     string prime_numbers;
     for (int i = left; i < right; ++i) {
@@ -32,7 +38,9 @@ int find_primes(int left, int right, vector<int> & known_primes, MPI_File & outp
         }
     }
     delete [] numbers;
-    MPI_File_write_shared(output, prime_numbers.data(), prime_numbers.length(), MPI_CHAR, &status);
+    time = MPI_Wtime();
+    MPI_File_write_shared(output, (void *) prime_numbers.data(), prime_numbers.length(),
+            MPI_CHAR, &status);
     return count;
 }
 
@@ -62,7 +70,7 @@ int main(int argc, char **argv) {
     int count = 0;
     vector<int> common_prime_numbers;
     start_time = MPI_Wtime();
-    int n = sqrt(right);
+    int n = (int) sqrt(right);
     int len = (n + 8) >> 3;
     unsigned char *numbers = new unsigned char [len];
     memset(numbers, 0, len);
@@ -79,15 +87,17 @@ int main(int argc, char **argv) {
         }
     }
     if (!rank) {
-        MPI_File_write_shared(output, prime_numbers.data(), prime_numbers.length(), MPI_CHAR,
-                &status);
+        finish_time = MPI_Wtime();
+        MPI_File_write_shared(output, (void *) prime_numbers.data(), prime_numbers.length(),
+                MPI_CHAR, &status);
+        start_time = start_time + MPI_Wtime() - finish_time;
         prime_numbers.clear();
     }
     delete [] numbers;
     left = max(n + 1, left);
     int range = right - left + 1;
-    count += find_primes(left + range * rank / size, left + range * (rank + 1) / size,
-            common_prime_numbers, output, finish_time);
+    count += find_primes(left + (long long) range * rank / size,
+            left + (long long) range * (rank + 1) / size, common_prime_numbers, output, finish_time);
     int total;
     MPI_Reduce(&count, &total, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
     double max_time, all_time, time = finish_time - start_time;
