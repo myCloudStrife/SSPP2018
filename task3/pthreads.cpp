@@ -3,8 +3,7 @@
 #include <vector>
 #include <cmath>
 #include <cstring>
-#include <algorithm>
-#include <chrono>
+#include <ctime>
 
 using namespace std;
 
@@ -15,30 +14,30 @@ void usage(int argc, char **argv) {
 
 struct Data {
     int left, right;
-    vector<bool> & numbers;
     vector<int> & known_primes, & new_primes;
     double time;
 };
 
 
 void * find_primes(void *args) {
-    chrono::steady_clock::time_point time1, time2;
-    time1 = chrono::steady_clock::now();
+    timespec time1, time2;
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &time1);
     Data *d = (Data *) args;
+    vector<bool> numbers(d->right - d->left, true);
     for (int i = 0; i < d->known_primes.size(); ++i) {
-        int first = d->left % d->known_primes[i] ? (d->left / d->known_primes[i] + 1) *
-                d->known_primes[i] : d->left;
-        for (int j = first; j < d->right; j += d->known_primes[i]) {
-            d->numbers[j] = false;
+        int prime = d->known_primes[i];
+        int first = d->left % prime ? (d->left / prime + 1) * d->known_primes[i] : d->left;
+        for (int j = first; j < d->right; j += prime) {
+            numbers[j - d->left] = false;
         }
     }
     for (int i = d->left; i < d->right; ++i) {
-        if (d->numbers[i]) {
+        if (numbers[i - d->left]) {
             d->new_primes.push_back(i);
         }
     }
-    time2 = chrono::steady_clock::now();
-    d->time = chrono::duration_cast<chrono::duration<double>>(time2 - time1).count();
+    clock_gettime(CLOCK_THREAD_CPUTIME_ID, &time2);
+    d->time = time2.tv_sec - time1.tv_sec + 1e-9 * (time2.tv_nsec - time1.tv_nsec);
     return nullptr;
 }
 
@@ -59,7 +58,7 @@ int main(int argc, char **argv) {
     int total = 0;
     vector<int> common_prime_numbers;
     int n = (int) sqrt(right);
-    vector<bool> numbers(right + 1, true);
+    vector<bool> numbers(n + 1, true);
     for (int i = 2; i <= n; ++i) {
         if (numbers[i]) {
             if (i >= left) {
@@ -72,15 +71,14 @@ int main(int argc, char **argv) {
         }
     }
     int range = right - max(n + 1, left) + 1;
-    vector<vector<int>> extern_primes(size);
-    vector<double> times(size, 0);
+    vector<int> extern_primes[size];
+    double times[size];
     vector<Data> data;
-    vector<pthread_t> tids(size);
+    pthread_t tids[size];
     for (int i = 0; i < size; ++i) {
         data.push_back({
                 (int) (max(n + 1, left) + (long long) range * i / size),
                 (int) (max(n + 1, left) + (long long) range * (i + 1) / size),
-                numbers,
                 common_prime_numbers,
                 extern_primes[i],
                 times[i]
