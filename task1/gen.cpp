@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
+#include <stdint.h>
 
 using namespace std;
 
@@ -20,7 +22,7 @@ int main(int argc, char **argv) {
     uint64_t m, n;
     sscanf(argv[2], "%llu", (long long unsigned *) &m);
     sscanf(argv[3], "%llu", (long long unsigned *) &n);
-    srand(n * m * time(nullptr));
+    srand(time(NULL));
     out.write(argv[1], 1);
     out.write((char *)&m, sizeof(m));
     out.write((char *)&n, sizeof(n));
