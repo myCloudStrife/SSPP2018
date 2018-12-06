@@ -33,16 +33,16 @@ int main(int argc, char **argv) {
             double x1, x2;
             in1.read((char *) &x1, sizeof(x1));
             in2.read((char *) &x2, sizeof(x2));
-            if (abs(x1 - x2) > numeric_limits<double>::epsilon()) {
-                printf("Matrix %s and %s not equal\n", argv[1], argv[2]);
+            if (abs(x1 - x2) > 10e-10) {
+                printf("Matrix %s and %s not equal, %f != %f\n", argv[1], argv[2], x1, x2);
                 return 1;
             }
         } else {
             float x1, x2;
             in1.read((char *) &x1, sizeof(x1));
             in2.read((char *) &x2, sizeof(x2));
-            if (abs(x1 - x2) > numeric_limits<float>::epsilon()) {
-                printf("Matrix %s and %s not equal\n", argv[1], argv[2]);
+            if (abs(x1 - x2) > 10e-5) {
+                printf("Matrix %s and %s not equal, %f != %f\n", argv[1], argv[2], x1, x2);
                 return 1;
             }
         }
