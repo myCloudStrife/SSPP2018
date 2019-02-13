@@ -5,21 +5,22 @@
 
 using namespace std;
 
-vector<complex<double>> rand_vec_norm(int n) {
+vector<complex<double>> rand_vec_norm(unsigned long long n) {
     vector<complex<double>> vec(n);
     double sum = 0;
-    long seed = omp_get_wtime() * 100;
-    printf("%ld\n", seed);
-    srand48(seed);
-#pragma omp parallel for reduction(+: sum)
-    for (int i = 0; i < n; ++i) {
-        //vec[i] = complex<double>(drand48(), drand48());
-        vec[i] = i;
-        sum += norm(vec[i]);
+    unsigned time = omp_get_wtime() * 100;
+#pragma omp parallel
+    {
+        unsigned seed = time + omp_get_thread_num();
+#pragma omp for reduction(+: sum)
+        for (unsigned long long i = 0; i < n; ++i) {
+            vec[i] = complex<double>(rand_r(&seed), rand_r(&seed));
+            sum += norm(vec[i]);
+        }
     }
     sum = sqrt(sum);
 #pragma omp parallel for
-    for (int i = 0; i < n; ++i) {
+    for (unsigned long long i = 0; i < n; ++i) {
         vec[i] /= sum;
     }
     return vec;
@@ -27,7 +28,7 @@ vector<complex<double>> rand_vec_norm(int n) {
 
 vector<complex<double>> transform(vector<complex<double>> a, int k, vector<complex<double>> u) {
     vector<complex<double>> b(a.size());
-    unsigned long long bit = 1 << k;
+    unsigned long long bit = 1ull << k;
 #pragma omp parallel for
     for (unsigned long long i = 0; i < a.size(); ++i) {
         b[i] = a[i & ~bit] * u[(i & bit) >> (k - 1)] + a[i | bit] * u[((i & bit) >> (k - 1)) + 1];
@@ -47,15 +48,8 @@ int main(int argc, char **argv) {
             M_SQRT1_2, M_SQRT1_2,
             M_SQRT1_2, -M_SQRT1_2 };
 
-    vector<complex<double>> a = rand_vec_norm(1 << n);
-    double sum = 0;
-    for (int i = 0; i < 1 << n; ++i) {
-        sum += norm(a[i]);
-        printf("%f %f\n", a[i].real(), a[i].imag());
-    }
-    printf("%f\n", sum);
-    vector<complex<double>> b = transform(a, k, u);
-    for (int i = 0; i < 1 << n; ++i) {
-        printf("%f %f\n", b[i].real(), b[i].imag());
-    }
+    double start_time = omp_get_wtime();
+    vector<complex<double>> a = rand_vec_norm(1ull << n);
+    transform(a, k, u);
+    printf("%.10f\n", omp_get_wtime() - start_time);
 }
