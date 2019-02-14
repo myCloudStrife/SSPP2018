@@ -32,7 +32,7 @@ vector<complex<double>> transform(const vector<complex<double>> & a, int k,
     unsigned long long bit = 1ull << k;
 #pragma omp parallel for
     for (unsigned long long i = 0; i < a.size(); ++i) {
-        b[i] = a[i & ~bit] * u[(i & bit) >> (k - 1)] + a[i | bit] * u[((i & bit) >> (k - 1)) + 1];
+        b[i] = a[i & ~bit] * u[((i & bit) >> k) << 1] + a[i | bit] * u[(((i & bit) >> k) << 1) + 1];
     }
     return b;
 }
@@ -58,6 +58,6 @@ int main(int argc, char **argv) {
     double start_time = omp_get_wtime();
     vector<complex<double>> a = rand_vec_norm(1ull << n);
     print_vec(a);
-    transform(a, k, u);
+    print_vec(transform(a, k, u));
     printf("%.10f\n", omp_get_wtime() - start_time);
 }
