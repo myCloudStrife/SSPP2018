@@ -1,5 +1,5 @@
-#include <omp.h>
 #include <mpi.h>
+#include <cstdio>
 #include <iostream>
 #include <complex>
 
@@ -71,7 +71,8 @@ complex<double> * transform(complex<double> *a, unsigned long long n, int k,
             q++;
             vec_fullsize >>= 1;
         }
-        unsigned long long bit = 1ull << (q - k);
+        k = q - k;
+        unsigned long long bit = 1ull << k;
         for (unsigned long long i = 0; i < n; ++i) {
             int u_row = ((i & bit) >> k) << 1;
             b[i] = a[i & ~bit] * u[u_row] + a[i | bit] * u[u_row + 1];
