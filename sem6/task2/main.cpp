@@ -1,7 +1,9 @@
 #include <mpi.h>
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <complex>
+#include <climits>
 
 using namespace std;
 
@@ -12,8 +14,8 @@ complex<double> * rand_vec_norm(unsigned long long n, unsigned seed) {
         vec[i] = complex<double>(1.0 / rand_r(&seed), 1.0 / rand_r(&seed));
         sum += norm(vec[i]);
     }
-    sum = sqrt(sum);
     MPI_Allreduce(MPI_IN_PLACE, &sum, 1, MPI_DOUBLE, MPI_SUM, MPI_COMM_WORLD);
+    sum = sqrt(sum);
     for (unsigned long long i = 0; i < n; ++i) {
         vec[i] /= sum;
     }
@@ -58,11 +60,26 @@ complex<double> * transform(complex<double> *a, unsigned long long n, int k,
     unsigned long long vec_fullsize = n * size;
     int target = (rank + size / (1ull << k)) % size;
     if (target != rank) {
-        MPI_Sendrecv(a, n * 2, MPI_DOUBLE, target, 7, b, n * 2, MPI_DOUBLE, target, 7,
+        unsigned long long need_count = n * 2;
+        int sendrecvcount = INT_MAX - 1;
+        unsigned long long i = 0;
+        while (need_count > INT_MAX) {
+            MPI_Sendrecv(a + i * sendrecvcount / 2, sendrecvcount, MPI_DOUBLE, target, 7,
+                    b + i * sendrecvcount / 2, sendrecvcount, MPI_DOUBLE, target, 7,
+                    MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+            i++;
+            need_count -= sendrecvcount;
+        }
+        MPI_Sendrecv(a + i * sendrecvcount / 2, need_count, MPI_DOUBLE, target, 7,
+                b + i * sendrecvcount / 2, need_count, MPI_DOUBLE, target, 7,
                 MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         if (target < rank) {
             for (unsigned long long i = 0; i < n; ++i) {
-                b[i] = b[i] * u[0] + a[i] * u[1];
+                b[i] = b[i] * u[2] + a[i] * u[3];
+            }
+        } else {
+            for (unsigned long long i = 0; i < n; ++i) {
+                b[i] = a[i] * u[0] + b[i] * u[1];
             }
         }
     } else {
@@ -74,7 +91,7 @@ complex<double> * transform(complex<double> *a, unsigned long long n, int k,
         k = q - k;
         unsigned long long bit = 1ull << k;
         for (unsigned long long i = 0; i < n; ++i) {
-            int u_row = ((i & bit) >> k) << 1;
+            int u_row = ((i & bit) >> k) * 2;
             b[i] = a[i & ~bit] * u[u_row] + a[i | bit] * u[u_row + 1];
         }
     }
@@ -116,7 +133,8 @@ int main(int argc, char **argv) {
             M_SQRT1_2, -M_SQRT1_2
     };
 
-    double time, max_time, start_time = MPI_Wtime();
+    double time, max_time, start_time;
+    start_time = MPI_Wtime();
     b = transform(a, n, k, u, size, rank);
     time = MPI_Wtime() - start_time;
     MPI_Reduce(&time, &max_time, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
@@ -124,7 +142,7 @@ int main(int argc, char **argv) {
         printf("%f\n", max_time);
     }
     if (argc == 4) {
-        write_vec(argv[3], n, size, rank, a);
+        write_vec(argv[3], n, size, rank, b);
     }
     delete [] a;
     delete [] b;

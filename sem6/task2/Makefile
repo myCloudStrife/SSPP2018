@@ -14,7 +14,7 @@ report4:
 	make report N=28
 	make report N=32
 
-report:
+report: main
 	mpisubmit.pl -p 1 --stdout time$(N)n_$(K)k_1p --stderr errors ./main $(N) $(K)
 	mpisubmit.pl -p 2 --stdout time$(N)n_$(K)k_2p --stderr errors ./main $(N) $(K)
 	mpisubmit.pl -p 4 --stdout time$(N)n_$(K)k_4p --stderr errors ./main $(N) $(K)
