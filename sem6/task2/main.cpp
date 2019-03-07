@@ -124,7 +124,12 @@ int main(int argc, char **argv) {
             exit(1);
         }
         n = (1ull << n) / size;
-        a = rand_vec_norm(n, MPI_Wtime() + rank);
+        double time;
+        if (!rank) {
+            time = MPI_Wtime();
+        }
+        MPI_Bcast(&time, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+        a = rand_vec_norm(n, time + rank);
     }
     sscanf(argv[2], "%llu", &k);
 
