@@ -6,7 +6,7 @@
 #include <complex>
 #include <climits>
 
-constexpr int EXPERIMENT_COUNT = 10;
+constexpr int EXPERIMENT_COUNT = 1;
 
 using namespace std;
 
@@ -75,7 +75,7 @@ complex<double> * transform(complex<double> *a, unsigned long long n, int k,
         const complex<double> *u, int size, int rank) {
     complex<double> *b = new complex<double>[n];
     unsigned long long vec_fullsize = n * size;
-    int target = (rank + size / (1ull << k)) % size;
+    int target = rank ^ (size >> k);
     if (target != rank) {
         unsigned long long need_count = n * 2;
         int sendrecvcount = INT_MAX - 1;
@@ -183,7 +183,7 @@ int main(int argc, char **argv) {
             delete [] noise;
             ideal = rand_vec_norm(n, seed + rank * num_threads);
             if (!rank) {
-                seed = MPI_Wtime() * 100000;
+                seed = MPI_Wtime() * 10;
             }
             MPI_Bcast(&seed, 1, MPI_UNSIGNED, 0, MPI_COMM_WORLD);
         }
@@ -209,6 +209,7 @@ int main(int argc, char **argv) {
             noise = tmp;
         }
         double fidelity_loc = 0, fidelity;
+#pragma omp parallel for reduction(+: fidelity_loc)
         for (unsigned long long i = 0; i < n; ++i) {
             fidelity_loc += abs(ideal[i] * conj(noise[i]));
         }
