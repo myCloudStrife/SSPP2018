@@ -208,14 +208,13 @@ int main(int argc, char **argv) {
             delete [] noise;
             noise = tmp;
         }
-        double fidelity_loc = 0, fidelity;
-#pragma omp parallel for reduction(+: fidelity_loc)
+        complex<double> fidelity_loc = 0, fidelity;
         for (unsigned long long i = 0; i < n; ++i) {
-            fidelity_loc += abs(ideal[i] * conj(noise[i]));
+            fidelity_loc += ideal[i] * conj(noise[i]);
         }
-        MPI_Reduce(&fidelity_loc, &fidelity, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+        MPI_Reduce(&fidelity_loc, &fidelity, 2, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
         if (!rank) {
-            printf("Loss: %f\n", 1.0 - fidelity);
+            printf("Loss: %f\n", 1.0 - norm(fidelity));
         }
     }
     time /= EXPERIMENT_COUNT;
