@@ -33,7 +33,7 @@ complex<double> * read_vec(const char *filename, unsigned long long & n, int siz
         exit(1);
     }
     complex<double> *vec = new complex<double>[n];
-    MPI_File_seek(file, rank * n * sizeof(vec[0]), MPI_SEEK_CUR);
+    MPI_File_seek(file, sizeof(vec_fullsize) + rank * n * sizeof(vec[0]), MPI_SEEK_SET);
     MPI_File_read_all(file, vec, n * 2, MPI_DOUBLE, MPI_STATUS_IGNORE);
     MPI_File_close(&file);
     return vec;
