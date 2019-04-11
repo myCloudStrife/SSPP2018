@@ -1,0 +1,2 @@
+language: cpp
+script: cd sem5/task1/ && make && make test
