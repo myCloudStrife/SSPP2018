@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include <cmath>
 
 using namespace std;
 
@@ -33,7 +34,7 @@ int main(int argc, char **argv) {
             double x1, x2;
             in1.read((char *) &x1, sizeof(x1));
             in2.read((char *) &x2, sizeof(x2));
-            if (abs(x1 - x2) > 10e-10) {
+            if (fabs(x1 - x2) > 10e-10) {
                 printf("Matrix %s and %s not equal, %f != %f\n", argv[1], argv[2], x1, x2);
                 return 1;
             }
@@ -41,7 +42,7 @@ int main(int argc, char **argv) {
             float x1, x2;
             in1.read((char *) &x1, sizeof(x1));
             in2.read((char *) &x2, sizeof(x2));
-            if (abs(x1 - x2) > 10e-5) {
+            if (fabs(x1 - x2) > 10e-5) {
                 printf("Matrix %s and %s not equal, %f != %f\n", argv[1], argv[2], x1, x2);
                 return 1;
             }
