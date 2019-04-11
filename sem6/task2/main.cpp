@@ -8,7 +8,7 @@
 using namespace std;
 
 complex<double> * rand_vec_norm(unsigned long long n, unsigned seed) {
-    complex<double> * vec = new complex<double>[n];
+    complex<double> *vec = new complex<double>[n];
     double sum = 0;
     for (unsigned long long i = 0; i < n; ++i) {
         vec[i] = complex<double>(1.0 / rand_r(&seed), 1.0 / rand_r(&seed));
@@ -58,7 +58,7 @@ complex<double> * transform(complex<double> *a, unsigned long long n, int k,
         const complex<double> *u, int size, int rank) {
     complex<double> *b = new complex<double>[n];
     unsigned long long vec_fullsize = n * size;
-    int target = (rank + size / (1ull << k)) % size;
+    int target = rank ^ (size >> k);
     if (target != rank) {
         unsigned long long need_count = n * 2;
         int sendrecvcount = INT_MAX - 1;
