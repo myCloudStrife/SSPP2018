@@ -22,50 +22,50 @@ test: random
 test_not: test_correct_not test_my_not random
 	./random $(TEST_Q) src
 	./test_correct_not src $(TEST_K) res
-	mpirun -n 1 ./test_my_not src $(TEST_K) myres 1
+	mpirun --oversubscribe -n 1 ./test_my_not src $(TEST_K) myres 1
 	diff res myres
-	mpirun -n 1 ./test_my_not src $(TEST_K) myres 2
+	mpirun --oversubscribe -n 1 ./test_my_not src $(TEST_K) myres 2
 	diff res myres
-	mpirun -n 1 ./test_my_not src $(TEST_K) myres 4
+	mpirun --oversubscribe -n 1 ./test_my_not src $(TEST_K) myres 4
 	diff res myres
-	mpirun -n 2 ./test_my_not src $(TEST_K) myres 1
+	mpirun --oversubscribe -n 2 ./test_my_not src $(TEST_K) myres 1
 	diff res myres
-	mpirun -n 4 ./test_my_not src $(TEST_K) myres 1
+	mpirun --oversubscribe -n 4 ./test_my_not src $(TEST_K) myres 1
 	diff res myres
-	mpirun -n 4 ./test_my_not src $(TEST_K) myres 4
+	mpirun --oversubscribe -n 4 ./test_my_not src $(TEST_K) myres 4
 	diff res myres
 	rm src res myres
 
 test_cnot: test_correct_cnot test_my_cnot random
 	./random $(TEST_Q) src
 	./test_correct_cnot src $(TEST_K) $(TEST_L) res
-	mpirun -n 1 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 1
+	mpirun --oversubscribe -n 1 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 1
 	diff res myres
-	mpirun -n 1 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 2
+	mpirun --oversubscribe -n 1 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 2
 	diff res myres
-	mpirun -n 1 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 4
+	mpirun --oversubscribe -n 1 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 4
 	diff res myres
-	mpirun -n 2 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 1
+	mpirun --oversubscribe -n 2 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 1
 	diff res myres
-	mpirun -n 4 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 1
+	mpirun --oversubscribe -n 4 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 1
 	diff res myres
-	mpirun -n 4 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 4
+	mpirun --oversubscribe -n 4 ./test_my_cnot src $(TEST_K) $(TEST_L) myres 4
 	diff res myres
 	rm src res myres
 
 test_adamar: test_my_adamar random print
 	./random $(TEST_Q) src
 	./print src > src.txt
-	mpirun -n 1 ./test_my_adamar src $(TEST_K) tmp 1
-	mpirun -n 1 ./test_my_adamar tmp $(TEST_K) myres 1
+	mpirun --oversubscribe -n 1 ./test_my_adamar src $(TEST_K) tmp 1
+	mpirun --oversubscribe -n 1 ./test_my_adamar tmp $(TEST_K) myres 1
 	./print myres > myres.txt
 	diff src.txt myres.txt
-	mpirun -n 2 ./test_my_adamar src $(TEST_K) tmp 2
-	mpirun -n 2 ./test_my_adamar tmp $(TEST_K) myres 2
+	mpirun --oversubscribe -n 2 ./test_my_adamar src $(TEST_K) tmp 2
+	mpirun --oversubscribe -n 2 ./test_my_adamar tmp $(TEST_K) myres 2
 	./print myres > myres.txt
 	diff src.txt myres.txt
-	mpirun -n 4 ./test_my_adamar src $(TEST_K) tmp 1
-	mpirun -n 4 ./test_my_adamar tmp $(TEST_K) myres 1
+	mpirun --oversubscribe -n 4 ./test_my_adamar src $(TEST_K) tmp 1
+	mpirun --oversubscribe -n 4 ./test_my_adamar tmp $(TEST_K) myres 1
 	./print myres > myres.txt
 	diff src.txt myres.txt
 	rm src src.txt tmp myres myres.txt
