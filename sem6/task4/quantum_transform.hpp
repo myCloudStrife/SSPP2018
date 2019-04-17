@@ -220,13 +220,13 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
     if (a != a00) {
         delete [] a00;
     }
-    if (a != a01) {
+    if (a != a01 && a00 != a01) {
         delete [] a01;
     }
-    if (a != a10) {
+    if (a != a10 && a00 != a10 && a01 != a10) {
         delete [] a10;
     }
-    if (a != a11) {
+    if (a != a11 && a00 != a11 && a01 != a11 && a10 != a11) {
         delete [] a11;
     }
 
