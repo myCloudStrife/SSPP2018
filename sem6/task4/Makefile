@@ -9,7 +9,7 @@ TEST_L = 2
 all: test_my_not
 
 lint: *.cpp *.c *.hpp tests/*.cpp
-	cpplint --filter=-legal/copyright $^
+	cpplint --extensions=c,cc,h,hpp,c++,h++,hh,cu,cpp,hxx,cxx,cuh --filter=-legal/copyright $^
 
 test: random
 	make test_not TEST_Q=7 TEST_K=3
