@@ -39,12 +39,12 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
         if (target < rank) {
 #pragma omp parallel for
             for (uint64_t i = 0; i < n; ++i) {
-                b[i] = b[i] * u[2] + a[i] * u[3];
+                b[i] = b[i] * u[1] + a[i] * u[3];
             }
         } else {
 #pragma omp parallel for
             for (uint64_t i = 0; i < n; ++i) {
-                b[i] = a[i] * u[0] + b[i] * u[1];
+                b[i] = a[i] * u[2] + b[i] * u[0];
             }
         }
     } else {
