@@ -9,7 +9,7 @@
 
 constexpr int SENDRECVTAG = 7321;
 
-std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
+std::complex<double> *quant_transform(std::complex<double> *a, uint64_t n,
         int k, std::complex<double> *u) {
     static int size = -1, rank = -1;
     if (size == -1 || rank == -1) {
@@ -85,7 +85,7 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
     owner11 = rank | (size >> k1) | (size >> k2);
 
     if (rank != owner00) {
-        a00 = new std::complex<double>[n];
+        a00 =new std::complex<double>[n];
         MPI_Sendrecv(a, n * 2, MPI_DOUBLE, owner00, SENDRECVTAG, a00, n * 2,
                 MPI_DOUBLE, owner00, SENDRECVTAG, MPI_COMM_WORLD,
                 MPI_STATUS_IGNORE);
@@ -115,7 +115,7 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
         a01 = a;
     }
 
-    if (rank != owner11) {
+    if(rank != owner11) {
         if (owner11 != owner10) {
             a11 = new std::complex<double>[n];
             MPI_Sendrecv(a, n * 2, MPI_DOUBLE, owner11, SENDRECVTAG, a11, n * 2,
@@ -166,11 +166,11 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
         if (!needswap) {
 #pragma omp parallel for
             for (uint64_t i = 0; i < n; ++i) {
-                int u_row = me + ((i & bit) >> k) * 0b100;
+                int u_row =  me + ((i & bit) >> k) * 0b100;
                 b[i] = u[u_row + 0] * a00[i & ~bit]
                         + u[u_row + 1] * a00[i | bit]
                         + u[u_row + 2] * a10[i & ~bit]
-                        + u[u_row + 3] * a10[i | bit];
+                           + u[u_row + 3] * a10[i | bit];
             }
         } else {
 #pragma omp parallel for
@@ -185,9 +185,9 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
     } else {
         int q = -1;
         uint64_t vec_fullsize = n * size;
-        while (vec_fullsize) {
+        while(vec_fullsize) {
             q++;
-            vec_fullsize >>= 1;
+               vec_fullsize >>= 1;
         }
         k1 = q - k1;
         k2 = q - k2;
@@ -233,7 +233,7 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
     return b;
 }
 
-std::complex<double> * transform_adamar(std::complex<double> *a, uint64_t n,
+std::complex<double> * transform_adamar (std::complex<double> *a, uint64_t n,
         int k) {
     static std::complex<double> u[4] = {
             M_SQRT1_2, M_SQRT1_2,
