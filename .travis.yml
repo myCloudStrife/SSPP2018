@@ -10,8 +10,8 @@ arch:
   - openmpi
   - cpplint
   script:
-  - ./test.sh
-  - ./lint.sh
+  - if ! ./test.sh; then exit 1; fi
+  - if ! ./lint.sh; then exit 1; fi
 
 script:
   - "curl -s https://raw.githubusercontent.com/mikkeloscar/arch-travis/master/arch-travis.sh | bash"
