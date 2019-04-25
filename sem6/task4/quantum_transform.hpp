@@ -167,18 +167,18 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
 #pragma omp parallel for
             for (uint64_t i = 0; i < n; ++i) {
                 int u_row = me + ((i & bit) >> k) * 0b100;
-                b[i] = u[u_row + 0] * a00[i & ~bit]
-                        + u[u_row + 1] * a00[i | bit]
-                        + u[u_row + 2] * a10[i & ~bit]
+                b[i] = u[u_row + 1] * a00[i & ~bit]
+                        + u[u_row + 2] * a00[i | bit]
+                        + u[u_row + 0] * a10[i & ~bit]
                         + u[u_row + 3] * a10[i | bit];
             }
         } else {
 #pragma omp parallel for
             for (uint64_t i = 0; i < n; ++i) {
                 int u_row = me + ((i & bit) >> k) * 0b1000;
-                b[i] = u[u_row + 0] * a00[i & ~bit]
+                b[i] = u[u_row + 2] * a00[i & ~bit]
                         + u[u_row + 1] * a10[i & ~bit]
-                        + u[u_row + 2] * a00[i | bit]
+                        + u[u_row + 0] * a00[i | bit]
                         + u[u_row + 3] * a10[i | bit];
             }
         }
