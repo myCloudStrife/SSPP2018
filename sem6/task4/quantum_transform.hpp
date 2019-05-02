@@ -295,7 +295,7 @@ std::complex<double> * transform_cnot(std::complex<double> *a, uint64_t n,
 
 std::complex<double> * transform_cRw(std::complex<double> *a, uint64_t n,
         int k1, int k2, double phi) {
-    static std::complex<double> u[16] = {
+    std::complex<double> u[16] = {
             1, 0, 0, 0,
             0, 1, 0, 0,
             0, 0, 1, 0,
