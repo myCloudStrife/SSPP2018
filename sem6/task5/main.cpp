@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     if (f) {
         fclose(f);
         a = read_vec(argv[1], &n, size, rank);
-        unsigned long long vec_fullsize = n * size;
+        uint64_t vec_fullsize = n * size;
         q = -1;
         while (vec_fullsize) {
             q++;
