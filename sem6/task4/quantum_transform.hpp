@@ -166,7 +166,7 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
         if (!needswap) {
 #pragma omp parallel for
             for (uint64_t i = 0; i < n; ++i) {
-                int u_row = me + ((i & bit) >> k) *  0b100;
+                int u_row = me + ((i & bit) >> k) * 0b100;
                 b[i] = u[u_row + 1] * a00[i & ~bit]
                         + u[u_row + 2] * a00[i | bit]
                         + u[u_row + 0] * a10[i & ~bit]
