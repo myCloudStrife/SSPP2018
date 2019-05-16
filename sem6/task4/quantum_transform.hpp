@@ -85,7 +85,7 @@ std::complex<double> * quant_transform(std::complex<double> *a, uint64_t n,
     owner11 = rank | (size >> k1) | (size >> k2);
 
     if (rank != owner00) {
-        a00 =new std::complex<double>[n];
+        a00  =new std::complex<double>[n];
         MPI_Sendrecv(a, n * 2, MPI_DOUBLE, owner00, SENDRECVTAG, a00, n * 2,
                 MPI_DOUBLE, owner00, SENDRECVTAG, MPI_COMM_WORLD,
                 MPI_STATUS_IGNORE);
